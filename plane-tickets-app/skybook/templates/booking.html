@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}SkyBook · Manage booking{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="/">&larr; Back to search</a></p>
+
+{% if booking %}
+  {% if notice %}
+  <div class="notice" role="status">{{ notice }}</div>
+  {% endif %}
+  {% if error %}
+  <div class="alert" role="alert"><ul><li>{{ error }}</li></ul></div>
+  {% endif %}
+
+  <section class="panel booking-summary" aria-labelledby="booking-heading">
+    <p class="muted">Booking reference</p>
+    <h1 id="booking-heading" class="booking-reference">{{ booking.reference }}</h1>
+    <p>
+      <span class="status-badge status-{{ booking.status }}">{{ booking.status|capitalize }}</span>
+      <span class="muted">{{ booking.cabin|capitalize }} · {{ booking.passenger_count }} {{ "passenger" if booking.passenger_count == 1 else "passengers" }}</span>
+    </p>
+  </section>
+
+  <section class="panel" aria-labelledby="itinerary-heading">
+    <h2 id="itinerary-heading">Itinerary</h2>
+    <p class="booking-flight">
+      <strong>{{ booking.flight.airline_name }} {{ booking.flight.flight_number }}</strong>
+      <span class="muted">{{ booking.flight.aircraft }}</span>
+    </p>
+    <div class="flight-times summary-times">
+      <div>
+        <span class="clock">{{ booking.flight.departs_local|clock }}</span>
+        <span class="place">{{ booking.flight.origin }} · {{ booking.flight.departs_local|day_label }}</span>
+      </div>
+      <div class="flight-path">
+        <span class="duration">{{ booking.flight.duration_minutes|duration }}</span>
+        <span class="stops{% if booking.flight.stops == 0 %} nonstop{% endif %}">
+          {% if booking.flight.stops == 0 %}Nonstop{% elif booking.flight.stops == 1 %}1 stop{% else %}{{ booking.flight.stops }} stops{% endif %}
+        </span>
+      </div>
+      <div>
+        <span class="clock">{{ booking.flight.arrives_local|clock }}</span>
+        <span class="place">{{ booking.flight.destination }} · {{ booking.flight.arrives_local|day_label }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="passengers-heading">
+    <h2 id="passengers-heading">Passengers and seats</h2>
+    <table class="booking-table">
+      <thead>
+        <tr>
+          <th scope="col">Passenger</th>
+          <th scope="col">Date of birth</th>
+          <th scope="col">Seat</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for passenger in booking.passengers %}
+        <tr>
+          <th scope="row">{{ passenger.first_name }} {{ passenger.last_name }}{% if loop.first %} <span class="muted">(lead)</span>{% endif %}</th>
+          <td data-label="Date of birth">{{ passenger.date_of_birth }}</td>
+          <td data-label="Seat">{{ passenger.seat }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="muted">Confirmation email: {{ booking.lead_email }}</p>
+  </section>
+
+  <section class="panel" aria-labelledby="total-heading">
+    <h2 id="total-heading">Total paid</h2>
+    <p class="booking-total">{{ booking.total_cents|money }}</p>
+    {% if booking.status == "cancelled" %}
+    <p class="muted">This booking is cancelled. Its seats have been released.</p>
+    {% elif booking.can_cancel %}
+    <form method="post" action="/bookings/{{ booking.reference }}/cancel" class="cancel-form">
+      <input type="hidden" name="last_name" value="{{ values.last_name }}">
+      <button type="submit" class="button danger">Cancel booking</button>
+    </form>
+    {% else %}
+    <p class="muted">This flight has already departed, so the booking can no longer be cancelled.</p>
+    {% endif %}
+  </section>
+
+  <p><a class="button" href="/bookings">Look up another booking</a></p>
+{% else %}
+  <section class="panel booking-lookup" aria-labelledby="lookup-heading">
+    <h1 id="lookup-heading">Manage your booking</h1>
+    <p class="muted">Enter the reference from your confirmation and the last name of the lead passenger.</p>
+
+    {% if errors.form %}
+    <div class="alert" role="alert"><ul><li>{{ errors.form }}</li></ul></div>
+    {% endif %}
+
+    <form method="get" action="/bookings" class="booking-form" novalidate>
+      <div class="field{% if errors.reference %} has-error{% endif %}">
+        <label for="reference">Booking reference</label>
+        <input id="reference" name="reference" type="text" value="{{ values.reference }}"
+               maxlength="6" autocapitalize="characters" autocomplete="off" required
+               {% if errors.reference %}aria-invalid="true" aria-describedby="reference-error"{% endif %}>
+        {% if errors.reference %}<p id="reference-error" class="field-error">{{ errors.reference }}</p>{% endif %}
+      </div>
+      <div class="field{% if errors.last_name %} has-error{% endif %}">
+        <label for="last_name">Lead passenger last name</label>
+        <input id="last_name" name="last_name" type="text" value="{{ values.last_name }}"
+               autocomplete="family-name" required
+               {% if errors.last_name %}aria-invalid="true" aria-describedby="last-name-error"{% endif %}>
+        {% if errors.last_name %}<p id="last-name-error" class="field-error">{{ errors.last_name }}</p>{% endif %}
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="button primary">Find booking</button>
+      </div>
+    </form>
+  </section>
+{% endif %}
+{% endblock %}

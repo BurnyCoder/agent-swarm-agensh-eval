@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% macro airport_select(name, label, selected, error) -%}
+<div class="field{% if error %} has-error{% endif %}">
+  <label for="{{ name }}">{{ label }}</label>
+  <select id="{{ name }}" name="{{ name }}" required{% if error %} aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}>
+    <option value="">Choose airport</option>
+    {% for airport in airports %}
+    <option value="{{ airport.code }}"{% if airport.code == selected %} selected{% endif %}>{{ airport.code }} · {{ airport.city }}, {{ airport.country }}</option>
+    {% endfor %}
+  </select>
+  {% if error %}<p class="field-error" id="{{ name }}-error">{{ error }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% block title %}SkyBook · Search flights{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Find your next flight</h1>
+  <p>Search {{ airports|length }} airports and book seats in a few steps.</p>
+</section>
+
+<section class="panel search-panel">
+  {% if errors %}
+  <div class="alert" role="alert">
+    <strong>Please fix the highlighted fields.</strong>
+    {% set general = errors.keys() | reject("in", inline_error_fields) | list %}
+    {% if general %}
+    <ul>
+      {% for key in general %}<li>{{ errors[key] }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <form method="get" action="/search" class="search-form" novalidate>
+    <div class="route-row">
+      {{ airport_select("origin", "From", values.origin, errors.get("origin")) }}
+      <button type="button" class="swap-button" id="swap-airports" hidden aria-label="Swap departure and destination">&#8644;</button>
+      {{ airport_select("destination", "To", values.destination, errors.get("destination")) }}
+    </div>
+
+    <div class="field-grid">
+      <div class="field{% if errors.get('date') %} has-error{% endif %}">
+        <label for="date">Departure date</label>
+        <input id="date" name="date" type="date" min="{{ today }}" value="{{ values.date }}" required{% if errors.get('date') %} aria-invalid="true" aria-describedby="date-error"{% endif %}>
+        {% if errors.get('date') %}<p class="field-error" id="date-error">{{ errors['date'] }}</p>{% endif %}
+      </div>
+
+      <div class="field{% if errors.get('return_date') %} has-error{% endif %}">
+        <label for="return_date">Return date <span class="optional">(optional)</span></label>
+        <input id="return_date" name="return_date" type="date" min="{{ today }}" value="{{ values.return_date }}"{% if errors.get('return_date') %} aria-invalid="true" aria-describedby="return_date-error"{% endif %}>
+        {% if errors.get('return_date') %}<p class="field-error" id="return_date-error">{{ errors['return_date'] }}</p>{% endif %}
+      </div>
+
+      <div class="field{% if errors.get('passengers') %} has-error{% endif %}">
+        <label for="passengers">Passengers</label>
+        <select id="passengers" name="passengers">
+          {% for n in range(1, max_passengers + 1) %}
+          <option value="{{ n }}"{% if values.passengers == n|string %} selected{% endif %}>{{ n }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.get('passengers') %}<p class="field-error" id="passengers-error">{{ errors['passengers'] }}</p>{% endif %}
+      </div>
+
+      <div class="field{% if errors.get('cabin') %} has-error{% endif %}">
+        <label for="cabin">Cabin</label>
+        <select id="cabin" name="cabin">
+          {% for c in cabins %}
+          <option value="{{ c }}"{% if values.cabin == c %} selected{% endif %}>{{ c|capitalize }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.get('cabin') %}<p class="field-error" id="cabin-error">{{ errors['cabin'] }}</p>{% endif %}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="button primary">Search flights</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Airports</h2>
+  <ul class="airport-list">
+    {% for airport in airports %}
+    <li>
+      <strong>{{ airport.code }}</strong> {{ airport.city }}, {{ airport.country }}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<script src="/static/search.js" defer></script>
+{% endblock %}

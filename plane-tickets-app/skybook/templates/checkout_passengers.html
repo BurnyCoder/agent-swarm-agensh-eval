@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}SkyBook · Passenger details · {{ flight.flight_number }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="/flights/{{ flight.id }}?passengers={{ passengers }}&amp;cabin={{ cabin }}&amp;picked=1{% for seat in chosen %}&amp;seat={{ seat }}{% endfor %}">&larr; Back to seats</a></p>
+
+<h1>Passenger details</h1>
+<p class="muted">{{ flight.airline_name }} {{ flight.flight_number }} · {{ flight.origin }} &rarr; {{ flight.destination }} · {{ cabin|capitalize }}</p>
+
+{% if errors %}
+<div class="alert" role="alert">
+  <p>Please fix the highlighted fields.</p>
+</div>
+{% endif %}
+
+<div class="checkout-layout">
+  <form method="post" action="/book/{{ flight.id }}/passengers" class="panel checkout-form" id="passenger-form" novalidate>
+    <input type="hidden" name="passengers" value="{{ passengers }}">
+    <input type="hidden" name="cabin" value="{{ cabin }}">
+    {% for seat in chosen %}<input type="hidden" name="seat" value="{{ seat }}">{% endfor %}
+
+    {% for person in people %}
+    {% set i = loop.index0 %}
+    <fieldset class="passenger">
+      <legend>Passenger {{ i + 1 }}{% if i == 0 %} (lead passenger){% endif %} · seat {{ chosen[i] if i < chosen|length }}</legend>
+      <div class="field-grid">
+        <div class="field{% if errors.get('first_name_' ~ i) %} has-error{% endif %}">
+          <label for="first-name-{{ i }}">First name</label>
+          <input id="first-name-{{ i }}" name="first_name" type="text" value="{{ person.first_name or '' }}" maxlength="50" autocomplete="off" required
+            {% if errors.get('first_name_' ~ i) %}aria-invalid="true" aria-describedby="err-first-{{ i }}"{% endif %}>
+          {% if errors.get('first_name_' ~ i) %}<p class="field-error" id="err-first-{{ i }}">{{ errors['first_name_' ~ i] }}</p>{% endif %}
+        </div>
+        <div class="field{% if errors.get('last_name_' ~ i) %} has-error{% endif %}">
+          <label for="last-name-{{ i }}">Last name</label>
+          <input id="last-name-{{ i }}" name="last_name" type="text" value="{{ person.last_name or '' }}" maxlength="50" autocomplete="off" required
+            {% if errors.get('last_name_' ~ i) %}aria-invalid="true" aria-describedby="err-last-{{ i }}"{% endif %}>
+          {% if errors.get('last_name_' ~ i) %}<p class="field-error" id="err-last-{{ i }}">{{ errors['last_name_' ~ i] }}</p>{% endif %}
+        </div>
+        <div class="field{% if errors.get('date_of_birth_' ~ i) %} has-error{% endif %}">
+          <label for="dob-{{ i }}">Date of birth</label>
+          <input id="dob-{{ i }}" name="date_of_birth" type="date" value="{{ person.date_of_birth or '' }}" max="{{ today }}" required
+            {% if errors.get('date_of_birth_' ~ i) %}aria-invalid="true" aria-describedby="err-dob-{{ i }}"{% endif %}>
+          {% if errors.get('date_of_birth_' ~ i) %}<p class="field-error" id="err-dob-{{ i }}">{{ errors['date_of_birth_' ~ i] }}</p>{% endif %}
+        </div>
+      </div>
+      {% if i == 0 %}
+      <div class="field{% if errors.email %} has-error{% endif %}">
+        <label for="email">Email for confirmation</label>
+        <input id="email" name="email" type="email" value="{{ person.email or '' }}" maxlength="254" autocomplete="email" required
+          {% if errors.email %}aria-invalid="true" aria-describedby="err-email"{% endif %}>
+        {% if errors.email %}<p class="field-error" id="err-email">{{ errors.email }}</p>{% endif %}
+      </div>
+      {% endif %}
+    </fieldset>
+    {% endfor %}
+
+    <div class="form-actions">
+      <a class="button" href="/flights/{{ flight.id }}?passengers={{ passengers }}&amp;cabin={{ cabin }}&amp;picked=1{% for seat in chosen %}&amp;seat={{ seat }}{% endfor %}">Change seats</a>
+      <button type="submit" class="button primary" id="passengers-submit">Continue to payment</button>
+    </div>
+  </form>
+
+  <aside class="panel checkout-summary" aria-labelledby="summary-heading">
+    <h2 id="summary-heading">Fare summary</h2>
+    <table class="fare-table" aria-label="Fare summary">
+      <tbody>
+        <tr><th scope="row">Base fare</th><td>{{ flight.breakdown.base_cents|money }}</td></tr>
+        <tr><th scope="row">Taxes and fees ({{ flight.breakdown.tax_percent }}%)</th><td>{{ flight.breakdown.taxes_cents|money }}</td></tr>
+        <tr class="fare-total"><th scope="row">Total</th><td>{{ flight.breakdown.total_cents|money }}</td></tr>
+      </tbody>
+    </table>
+  </aside>
+</div>
+{% endblock %}

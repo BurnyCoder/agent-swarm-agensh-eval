@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% macro stops_label(stops) -%}
+{% if stops == 0 %}Nonstop{% elif stops == 1 %}1 stop{% else %}{{ stops }} stops{% endif %}
+{%- endmacro %}
+
+{% macro leg_block(leg, heading) -%}
+{% set q = leg.query %}
+{% set day_text = q.day.strftime("%a %d %b %Y") %}
+<section class="leg" aria-labelledby="{{ heading|lower }}-heading">
+  <header class="leg-header">
+    <h2 id="{{ heading|lower }}-heading">{{ heading }}: {{ q.origin }} &rarr; {{ q.destination }}</h2>
+    <p class="muted">{{ day_text }} · {{ q.passengers }} {{ "passenger" if q.passengers == 1 else "passengers" }} · {{ q.cabin|capitalize }}</p>
+  </header>
+
+  {% if leg.flights %}
+  <p class="result-count">{{ leg.flights|length }} of {{ leg.total }} flights</p>
+  <ul class="flight-list">
+    {% for f in leg.flights %}
+    <li class="flight-card">
+      <div class="flight-times">
+        <div>
+          <span class="clock">{{ f.departs_local|clock }}</span>
+          <span class="place">{{ f.origin }}</span>
+        </div>
+        <div class="flight-path">
+          <span class="duration">{{ f.duration_minutes|duration }}</span>
+          <span class="stops{% if f.stops == 0 %} nonstop{% endif %}">{{ stops_label(f.stops) }}</span>
+        </div>
+        <div>
+          <span class="clock">{{ f.arrives_local|clock }}</span>
+          <span class="place">{{ f.destination }}</span>
+        </div>
+      </div>
+      <div class="flight-meta">
+        <span class="airline">{{ f.airline_name }}</span>
+        <span class="flight-number">{{ f.flight_number }} · {{ f.aircraft }}</span>
+        {% if f.seats_left <= 5 %}
+        <span class="seats-warning">Only {{ f.seats_left }} seats left</span>
+        {% endif %}
+      </div>
+      <div class="flight-price">
+        <span class="total">{{ f.total_cents|money }}</span>
+        <span class="per-person">incl. taxes</span>
+        <span class="per-person">{{ f.fare_per_passenger_cents|money }} per passenger</span>
+        <a class="button primary small" href="/flights/{{ f.id }}?passengers={{ f.passengers }}&amp;cabin={{ f.cabin }}">Select</a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% elif leg.total == 0 %}
+  <div class="empty" role="status">
+    <p><strong>No flights from {{ q.origin }} to {{ q.destination }} on {{ day_text }}</strong>
+    with {{ q.passengers }} {{ "seat" if q.passengers == 1 else "seats" }} free in {{ q.cabin }}.</p>
+    <p class="muted">Try another date or cabin.</p>
+  </div>
+  {% else %}
+  <div class="empty" role="status">
+    <p><strong>No flights match your filters.</strong> {{ leg.total }} flights run on this day.</p>
+    <p class="muted">Remove a filter to see them.</p>
+  </div>
+  {% endif %}
+</section>
+{%- endmacro %}
+
+{% block title %}SkyBook · Results{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{{ change_url }}">&larr; Change search</a></p>
+
+<section class="panel filter-panel">
+  <form method="get" action="/search" class="filter-form">
+    <input type="hidden" name="origin" value="{{ values.origin }}">
+    <input type="hidden" name="destination" value="{{ values.destination }}">
+    <input type="hidden" name="date" value="{{ values.date }}">
+    <input type="hidden" name="return_date" value="{{ values.return_date }}">
+    <input type="hidden" name="passengers" value="{{ values.passengers }}">
+    <input type="hidden" name="cabin" value="{{ values.cabin }}">
+
+    <div class="field">
+      <label for="sort">Sort by</label>
+      <select id="sort" name="sort">
+        {% for key, label in sort_labels.items() %}
+        <option value="{{ key }}"{% if values.sort == key %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="max_stops">Stops</label>
+      <select id="max_stops" name="max_stops">
+        <option value="">Any</option>
+        <option value="0"{% if values.max_stops == "0" %} selected{% endif %}>Nonstop only</option>
+        <option value="1"{% if values.max_stops == "1" %} selected{% endif %}>1 stop or fewer</option>
+        <option value="2"{% if values.max_stops == "2" %} selected{% endif %}>2 stops or fewer</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="airline">Airline</label>
+      <select id="airline" name="airline">
+        <option value="">All airlines</option>
+        {% for code, name in airlines %}
+        <option value="{{ code }}"{% if values.airline == code %} selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="button">Apply</button>
+    </div>
+  </form>
+</section>
+
+{{ leg_block(outbound, "Outbound") }}
+{% if inbound %}
+{{ leg_block(inbound, "Return") }}
+{% endif %}
+{% endblock %}

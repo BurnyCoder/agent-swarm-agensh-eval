@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}SkyBook · Payment · {{ flight.flight_number }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="/flights/{{ flight.id }}?passengers={{ passengers }}&amp;cabin={{ cabin }}&amp;picked=1{% for seat in chosen %}&amp;seat={{ seat }}{% endfor %}">&larr; Back to seats</a></p>
+
+<h1>Payment</h1>
+<p class="muted">This is a demo. No real payment is taken.</p>
+
+{% if alert %}
+<div class="alert" role="alert">
+  <ul>
+    {% for message in alert %}<li>{{ message }}</li>{% endfor %}
+  </ul>
+  <p><a class="button small" href="/flights/{{ flight.id }}?passengers={{ passengers }}&amp;cabin={{ cabin }}">Choose seats again</a></p>
+</div>
+{% elif errors %}
+<div class="alert" role="alert">
+  <p>Please check the card details.</p>
+</div>
+{% endif %}
+
+<div class="checkout-layout">
+  <form method="post" action="/book/{{ flight.id }}/pay" class="panel checkout-form" id="payment-form" autocomplete="off">
+    {# Passenger details travel as hidden fields so the server can re-check them. #}
+    <input type="hidden" name="passengers" value="{{ passengers }}">
+    <input type="hidden" name="cabin" value="{{ cabin }}">
+    {% for seat in chosen %}<input type="hidden" name="seat" value="{{ seat }}">{% endfor %}
+    {% for person in people %}
+    <input type="hidden" name="first_name" value="{{ person.first_name }}">
+    <input type="hidden" name="last_name" value="{{ person.last_name }}">
+    <input type="hidden" name="date_of_birth" value="{{ person.date_of_birth }}">
+    {% endfor %}
+    <input type="hidden" name="email" value="{{ people[0].email if people else '' }}">
+
+    <h2>Card details</h2>
+    <p class="muted">Test card: <code>4242 4242 4242 4242</code>, any future expiry, any 3-digit CVC. Other cards are declined.</p>
+
+    <div class="field{% if errors.card_number %} has-error{% endif %}">
+      <label for="card-number">Card number</label>
+      <input id="card-number" name="card_number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="4242 4242 4242 4242" required
+        {% if errors.card_number %}aria-invalid="true" aria-describedby="err-card"{% endif %}>
+      {% if errors.card_number %}<p class="field-error" id="err-card">{{ errors.card_number }}</p>{% endif %}
+    </div>
+
+    <div class="field-grid">
+      <div class="field{% if errors.expiry %} has-error{% endif %}">
+        <label for="expiry">Expiry (MM/YY)</label>
+        <input id="expiry" name="expiry" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="7" placeholder="MM/YY" required
+          {% if errors.expiry %}aria-invalid="true" aria-describedby="err-expiry"{% endif %}>
+        {% if errors.expiry %}<p class="field-error" id="err-expiry">{{ errors.expiry }}</p>{% endif %}
+      </div>
+      <div class="field{% if errors.cvc %} has-error{% endif %}">
+        <label for="cvc">CVC</label>
+        <input id="cvc" name="cvc" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="3" placeholder="123" required
+          {% if errors.cvc %}aria-invalid="true" aria-describedby="err-cvc"{% endif %}>
+        {% if errors.cvc %}<p class="field-error" id="err-cvc">{{ errors.cvc }}</p>{% endif %}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="button" href="/book/{{ flight.id }}?passengers={{ passengers }}&amp;cabin={{ cabin }}{% for seat in chosen %}&amp;seat={{ seat }}{% endfor %}">Edit passengers</a>
+      <button type="submit" class="button primary" id="pay-submit">Pay {{ flight.breakdown.total_cents|money }}</button>
+    </div>
+  </form>
+
+  <aside class="panel checkout-summary" aria-labelledby="trip-heading">
+    <h2 id="trip-heading">Your trip</h2>
+    <p>{{ flight.airline_name }} {{ flight.flight_number }}<br>
+      {{ flight.origin }} &rarr; {{ flight.destination }}<br>
+      <span class="muted">{{ flight.departs_local|day_label }} · {{ flight.departs_local|clock }}</span></p>
+    <h3>Travellers</h3>
+    <ul class="traveller-list">
+      {% for person in people %}
+      <li>{{ person.first_name }} {{ person.last_name }} · seat {{ chosen[loop.index0] if loop.index0 < chosen|length }}</li>
+      {% endfor %}
+    </ul>
+    <table class="fare-table" aria-label="Total">
+      <tbody>
+        <tr class="fare-total"><th scope="row">Total</th><td>{{ flight.breakdown.total_cents|money }}</td></tr>
+      </tbody>
+    </table>
+  </aside>
+</div>
+{% endblock %}

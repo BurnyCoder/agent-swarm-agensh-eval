@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}SkyBook · Flight {% if flight %}{{ flight.flight_number }}{% else %}not found{% endif %}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="/">&larr; Back to search</a></p>
+
+{% if not flight %}
+<div class="alert" role="alert">
+  <ul>
+    {% for message in error %}<li>{{ message }}</li>{% endfor %}
+  </ul>
+</div>
+<p><a class="button" href="/">Start a new search</a></p>
+{% else %}
+
+<section class="panel flight-summary" aria-labelledby="flight-heading">
+  <h1 id="flight-heading">{{ flight.airline_name }} {{ flight.flight_number }}</h1>
+  <p class="muted">{{ flight.origin }} &rarr; {{ flight.destination }} · {{ flight.aircraft }}</p>
+  <div class="flight-times summary-times">
+    <div>
+      <span class="clock">{{ flight.departs_local|clock }}</span>
+      <span class="place">{{ flight.origin }} · {{ flight.departs_local|day_label }}</span>
+    </div>
+    <div class="flight-path">
+      <span class="duration">{{ flight.duration_minutes|duration }}</span>
+      <span class="stops{% if flight.stops == 0 %} nonstop{% endif %}">
+        {% if flight.stops == 0 %}Nonstop{% elif flight.stops == 1 %}1 stop{% else %}{{ flight.stops }} stops{% endif %}
+      </span>
+    </div>
+    <div>
+      <span class="clock">{{ flight.arrives_local|clock }}</span>
+      <span class="place">{{ flight.destination }} · {{ flight.arrives_local|day_label }}</span>
+    </div>
+  </div>
+</section>
+
+<nav class="cabin-switch" aria-label="Cabin">
+  {% for name in cabins %}
+  <a class="button small{% if name == cabin %} primary{% endif %}" href="/flights/{{ flight.id }}?passengers={{ passengers }}&amp;cabin={{ name }}"{% if name == cabin %} aria-current="page"{% endif %}>{{ name|capitalize }}</a>
+  {% endfor %}
+</nav>
+
+<div class="flight-layout">
+  <section class="panel fare-panel" aria-labelledby="fare-heading">
+    <h2 id="fare-heading">Fare breakdown</h2>
+    <table class="fare-table" aria-label="Fare breakdown">
+      <thead>
+        <tr>
+          <th scope="col">Item</th>
+          <th scope="col">Per passenger</th>
+          <th scope="col">{{ passengers }} {{ "passenger" if passengers == 1 else "passengers" }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Base fare</th>
+          <td>{{ flight.breakdown.per_passenger.base_cents|money }}</td>
+          <td>{{ flight.breakdown.base_cents|money }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Taxes and fees ({{ flight.breakdown.tax_percent }}%)</th>
+          <td>{{ flight.breakdown.per_passenger.taxes_cents|money }}</td>
+          <td>{{ flight.breakdown.taxes_cents|money }}</td>
+        </tr>
+        <tr class="fare-total">
+          <th scope="row">Total</th>
+          <td>{{ flight.breakdown.per_passenger.total_cents|money }}</td>
+          <td>{{ flight.breakdown.total_cents|money }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted">{{ flight.seats_left }} {{ "seat" if flight.seats_left == 1 else "seats" }} left in {{ cabin }}.</p>
+  </section>
+
+  <section class="panel seat-panel" aria-labelledby="seat-heading">
+    <h2 id="seat-heading">Choose your seats</h2>
+    <p class="muted">Pick one seat for each of the {{ passengers }} {{ "passenger" if passengers == 1 else "passengers" }}.</p>
+
+    {% if seat_errors %}
+    <div class="alert" role="alert">
+      <ul>
+        {% for message in seat_errors %}<li>{{ message }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <form method="get" action="/flights/{{ flight.id }}" class="seat-form" id="seat-form" data-passengers="{{ passengers }}">
+      <input type="hidden" name="passengers" value="{{ passengers }}">
+      <input type="hidden" name="cabin" value="{{ cabin }}">
+      <input type="hidden" name="picked" value="1">
+
+      <p class="seat-count" id="seat-count" aria-live="polite">{{ chosen|length }} of {{ passengers }} chosen</p>
+
+      <ul class="seat-legend" aria-label="Legend">
+        <li><span class="seat-sample"></span> Available</li>
+        <li><span class="seat-sample is-chosen"></span> Your seat</li>
+        <li><span class="seat-sample is-taken"></span> Taken</li>
+      </ul>
+
+      <div class="seat-map" role="group" aria-label="{{ cabin|capitalize }} seat map">
+        {% for row in rows %}
+        <div class="seat-row">
+          <span class="row-number" aria-hidden="true">{{ row.row }}</span>
+          {% for block in row.blocks %}
+          <div class="seat-block">
+            {% for seat in block %}
+            <label class="seat{% if seat.taken %} is-taken{% endif %}{% if seat.id in chosen %} is-chosen{% endif %}">
+              <input type="checkbox" name="seat" value="{{ seat.id }}"
+                aria-label="Seat {{ seat.id }}, {{ 'taken' if seat.taken else 'available' }}"
+                {%- if seat.taken %} disabled{% endif %}
+                {%- if seat.id in chosen %} checked{% endif %}>
+              <span aria-hidden="true">{{ seat.id[-1] }}</span>
+            </label>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="button" id="seat-submit">Confirm seats</button>
+      </div>
+    </form>
+
+    {% if confirmed %}
+    <div class="seat-summary" role="status">
+      <p><strong>Seats selected:</strong> {{ chosen|join(", ") }}</p>
+      <form method="get" action="/book/{{ flight.id }}" class="continue-form">
+        <input type="hidden" name="passengers" value="{{ passengers }}">
+        <input type="hidden" name="cabin" value="{{ cabin }}">
+        {% for seat in chosen %}<input type="hidden" name="seat" value="{{ seat }}">{% endfor %}
+        <button type="submit" class="button primary" id="continue-submit">Continue to passengers</button>
+      </form>
+    </div>
+    {% endif %}
+  </section>
+</div>
+<script src="/static/seatmap.js" defer></script>
+{% endif %}
+{% endblock %}
