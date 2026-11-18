@@ -1,0 +1,32 @@
+# Agensh software-project file: a team of Claude Code workers (Claude Haiku 5.5)
+# builds a RAG question-answering system over Python PEPs.
+# Format: https://github.com/microsoft/Agensh/blob/main/tasks/software-project/README.md
+pack = "software-project"
+name = "pep-rag"
+goal_file = "goal.md"
+
+[workspace]
+seed = "git"            # import the seed repo (corpus + corpus test) as main, with history
+
+[upstream]
+repo = "/home/burny/projects/agensh-eval/rag-upstream"   # local seed repo (made by make_seed.py)
+base_branch = "main"
+delivery_branch = "agensh/{run_id}"                       # export pushes the team's main here
+
+[acceptance]
+pr = ["python3 -m pip install -q --disable-pip-version-check pytest -r requirements.txt && python3 -m pytest -q"]
+timeout_minutes = 15
+
+[team]
+workers = 4
+
+[budget]
+hours = 1.5
+max_model_tokens = 40000000   # team + the app's own model calls; the run pauses when spent
+
+[coordination]
+planning = false              # self-organized start (plane-tickets run showed Haiku skipping the [plan] PR title)
+
+[environment]
+base_image = "default-python" # python:3.12-bookworm
+network = "open"              # auto would choose allowlist for a local upstream; fastembed downloads from Hugging Face
