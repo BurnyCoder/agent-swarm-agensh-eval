@@ -58,7 +58,15 @@ Claude Code workers (4 per team, Docker)  ──►  Agensh egress proxy (inject
 | [`haiku.json`](haiku.json) | Agensh harness override: Claude Code 2.1.327, `claude-haiku-5-5`, effort `high`, 100K context window, compaction at 80% (keeps prompts under Haiku 5.5's 100K-token price tier) |
 | [`plane-tickets/project.toml`](plane-tickets/project.toml), [`goal.md`](plane-tickets/goal.md) | Agensh `software-project` file and goal for SkyBook |
 | [`rag/project.toml`](rag/project.toml), [`goal.md`](rag/goal.md), [`make_seed.py`](rag/make_seed.py) | PEPtalk project, goal, and the script that builds the seed repo: PEPs from [python/peps](https://github.com/python/peps) at a pinned commit, kept only if their Copyright section is public domain or CC0 |
-| [`relay/anthropic_relay.py`](relay/anthropic_relay.py) | Header relay for workspace-scoped API keys |
+| [`relay/anthropic_relay.py`](relay/anthropic_relay.py) | Header relay for workspace-scoped API keys, plus a **hard dollar cap** across all teams (tests: [`relay/test_anthropic_relay.py`](relay/test_anthropic_relay.py)) |
+
+**Spend cap.** Agensh's `[budget] max_model_tokens` counts only uncached input + output tokens (`scripts/usage_meter.py`), not
+cache reads/writes or dollars. Here, most traffic is cache reads, so that cap would not bound cost. Every model request passes through the relay, so it enforces the cap instead:
+- It forwards only `claude-haiku-5-5`.
+- Before forwarding, it reserves an upper bound of the request's cost: body bytes / 2 tokens, all priced as 1-hour cache writes, plus `max_tokens` of output.
+- It refuses with 403 if spent + reserved would exceed `RELAY_SPEND_CAP_USD`. After the response, it settles the actual cost from the response's `usage`.
+- Haiku 5.5 prices: $0.10 / $0.50 per MTok in / out (≤100K-token prompts; $0.50 / $2.50 above), cache reads 0.1×, 5-minute writes 1.25×, 1-hour writes 2×.
+- For these runs the cap is **$9.00**. The ledger was seeded with the $2.83 spent before the cap existed, priced the same conservative way plus a $0.10 margin.
 
 ## Reproduce
 
