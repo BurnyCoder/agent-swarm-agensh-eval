@@ -1,0 +1,16 @@
+{
+  "run_id": "20261118t132725z",
+  "seed": "git",
+  "upstream": "/home/burny/projects/agensh-eval/rag-upstream",
+  "base_branch": "main",
+  "base_sha": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+  "history": "full",
+  "team_base": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+  "network": "open",
+  "network_reason": "open (set in the project file)",
+  "allow_domains": [],
+  "agensh_files": [
+    ".gitea/workflows/agensh.yml"
+  ],
+  "human": ""
+}

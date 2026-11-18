@@ -1,0 +1,12 @@
+{
+  "head": "4634ffbdd70234ac2a2b19a5c2784d78fa855d9a",
+  "team_head": "813e3b7697b93822076a2b9f16aea30342e7384c",
+  "base_sha": "9d7cef919be2cd616a042db9bfd82079dc57075a",
+  "commits": 41,
+  "run_id": "20261118t125914z",
+  "upstream_sha": "9d7cef919be2cd616a042db9bfd82079dc57075a",
+  "sync": null,
+  "sensitive_changes": [],
+  "mode": "bundle",
+  "bundle": "/home/burny/projects/agensh-eval/Agensh/out/projects/plane-tickets/delivery.bundle"
+}

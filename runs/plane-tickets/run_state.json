@@ -1,0 +1,18 @@
+{
+  "segments": [
+    {
+      "mode": "run",
+      "started": "2026-11-18T13:01:28Z",
+      "ended": "2026-11-18T14:02:36Z",
+      "reason": "pause"
+    },
+    {
+      "mode": "resume",
+      "started": "2026-11-18T15:09:14Z",
+      "ended": "2026-11-18T15:46:37Z",
+      "reason": "budget"
+    }
+  ],
+  "state": "finalized",
+  "pid": null
+}

@@ -1,0 +1,21 @@
+8c0b553|Agensh|2026-11-18T16:06:13+01:00|Remove the Agensh team workflow
+5a3bd3a|team-worker4|2026-11-18T14:41:00+00:00|docs: add generation metrics from #22 to the README results (#29)
+0227eff|team-worker3|2026-11-18T14:39:42+00:00|Merge pull request 'eval: commit --generate results (citation accuracy, answer correctness)' (#26) from worker3/eval-generate into main
+0a6db92|team-worker4|2026-11-18T14:35:03+00:00|Merge pull request 'Verify README against main: PORT check, search default mode (#23)' (#25) from readme-verify into main
+40dd945|team-worker2|2026-11-18T14:31:05+00:00|Merge pull request 'docs(eval): README reflects committed retrieval results' (#24) from eval-readme-status into main
+a196903|team-worker4|2026-11-18T14:22:02+00:00|Document architecture, usage, configuration and eval results (#11)
+0a9b114|team-worker1|2026-11-18T14:18:28+00:00|Merge pull request 'test: move dense/hybrid test fakes into tests/fakes.py' (#20) from worker1/test-fakes into main
+cc92194|team-worker3|2026-11-18T14:16:50+00:00|Merge pull request 'docs: describe generation, ask API and proxy key' (#19) from worker3/docs-generate into main
+05424a1|team-worker1|2026-11-18T13:54:35+00:00|Merge pull request 'eval: commit retrieval results for bm25, dense and hybrid' (#18) from worker1/eval-results into main
+373bd8c|team-worker3|2026-11-18T13:54:23+00:00|Merge pull request 'generate: placeholder key on the team proxy route' (#17) from worker3/proxy-key into main
+8af857e|team-worker1|2026-11-18T13:50:22+00:00|Merge pull request 'cli: register ask and serve subcommands in __main__' (#16) from worker1/cli into main
+3f584cf|team-worker1|2026-11-18T13:47:05+00:00|Merge pull request 'Add dense (fastembed) and hybrid (RRF) retrieval' (#15) from worker1/dense into main
+7cdce87|team-worker2|2026-11-18T13:44:35+00:00|Merge pull request 'test: pin the miss lines in the eval report' (#14) from eval-tighten into main
+1929aa4|team-worker2|2026-11-18T13:43:43+00:00|Merge pull request 'eval: gold question set and retrieval/generation evaluation harness (#3)' (#13) from eval-questions into main
+97ff597|team-worker4|2026-11-18T13:42:10+00:00|Merge pull request 'service: get_retriever() so `ask` can load the persisted index' (#12) from worker4/get-retriever into main
+8e2cafd|team-worker4|2026-11-18T13:39:03+00:00|web: RetrievalService adapter, always-mounted /api/ask, serve from index (#5)
+e1e15fc|team-worker3|2026-11-18T13:37:47+00:00|Merge pull request 'ask: CLI subcommand with cited answers and sources' (#9) from worker3/ask-cli into main
+bae4008|team-worker3|2026-11-18T13:35:37+00:00|Merge pull request 'generate: prompt building, citation parsing, Anthropic client, POST /api/ask' (#6) from worker3/generate into main
+2c8876b|team-worker4|2026-11-18T13:34:29+00:00|Merge pull request 'web: FastAPI app, GET /api/search, Jinja2 UI with citations and snippets (#5)' (#8) from web-ui into main
+b41decf|Agensh|2026-11-18T14:27:25+01:00|Add the Agensh team workflow
+5a85c48|Agensh seed|2026-11-18T14:26:38+01:00|Seed: 69 PEPs from python/peps@e7c5b54

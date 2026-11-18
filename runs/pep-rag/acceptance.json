@@ -1,0 +1,13 @@
+{
+  "head": "8c0b55376b2dcda3f6b6fbf24b94b34283419930",
+  "image": "omcgitea-agent-default-python-claude:agensh",
+  "all_passed": true,
+  "results": [
+    {
+      "command": "python3 -m pip install -q --disable-pip-version-check pytest -r requirements.txt && python3 -m pytest -q",
+      "exit_status": 0,
+      "seconds": 42.3,
+      "output_tail": "........................................................................ [ 43%]\n........................................................................ [ 86%]\n......................                                                   [100%]\n166 passed in 1.63s\nWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "history": [
+    {
+      "upstream_sha": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+      "result": "up-to-date",
+      "at": "2026-11-18T14:33:46Z",
+      "phase": "scheduled"
+    },
+    {
+      "upstream_sha": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+      "result": "up-to-date",
+      "at": "2026-11-18T15:06:09Z",
+      "phase": "final"
+    }
+  ],
+  "last": {
+    "upstream_sha": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+    "result": "up-to-date",
+    "at": "2026-11-18T15:06:09Z",
+    "phase": "final"
+  }
+}

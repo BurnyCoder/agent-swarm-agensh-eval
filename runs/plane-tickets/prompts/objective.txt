@@ -1,0 +1,90 @@
+# ⚙️ Current task: plane-tickets
+
+## Goal
+
+# SkyBook: a plane ticket booking web app
+
+Build a small but complete web application where people search for flights and
+book plane tickets. This is a demo: no real airlines, no real payments.
+
+## Stack
+
+- Python 3.12 backend with FastAPI (or Flask), SQLite through the standard
+  library or SQLAlchemy, server-rendered HTML (Jinja2) plus a little vanilla
+  JavaScript and CSS. No Node build step.
+- Pin dependencies in `requirements.txt` at the repository root.
+- Seed the database on first start with realistic sample data: at least 12
+  airports (IATA code, city, country) and at least 200 flights over the next
+  30 days (flight number, airline, origin, destination, departure and arrival
+  times, duration, number of stops, aircraft seat map, economy and business
+  fares, seats left).
+- One start command, documented in the README: `python3 -m skybook` serves the
+  app on `http://0.0.0.0:8000` (port overridable with the `PORT` environment
+  variable).
+
+## Features
+
+1. **Search**: home page form with origin, destination (autocomplete or select
+   from airports), departure date, optional return date (round trip),
+   passenger count (1-9) and cabin (economy/business). Validate input
+   (origin != destination, date not in the past).
+2. **Results**: matching flights with times, duration, stops, airline and
+   price for the chosen cabin and passenger count. Sort by price, departure
+   time or duration; filter by max stops and airline. A clear message when
+   nothing matches.
+3. **Flight details and seats**: fare breakdown (base fare, taxes, total) and
+   a seat map where the user picks one seat per passenger; taken seats cannot
+   be chosen.
+4. **Passengers and checkout**: a form per passenger (first name, last name,
+   date of birth, email for the lead passenger) with server-side validation,
+   then a mock payment step that accepts only the test card number
+   `4242 4242 4242 4242` with any future expiry and any 3-digit CVC, and
+   rejects everything else with a helpful error. Never store card numbers.
+5. **Confirmation**: a booking reference (6 uppercase letters/digits), the
+   itinerary, seats, passengers and total paid. Seats left and the seat map
+   update after booking.
+6. **Manage booking**: look up a booking by reference + lead passenger last
+   name; view it; cancel it (seats are released, status becomes cancelled).
+7. **JSON API** used by the pages and by tests:
+   `GET /api/airports`, `GET /api/flights?origin=&destination=&date=&passengers=&cabin=`,
+   `GET /api/flights/{id}`, `POST /api/bookings`, `GET /api/bookings/{reference}?last_name=`,
+   `POST /api/bookings/{reference}/cancel`.
+
+## Quality
+
+- pytest tests for search, seat selection, booking validation, payment
+  rejection, confirmation and cancellation (API tests through the framework's
+  test client are fine). `python3 -m pytest -q` must pass from the repository root.
+- A README with features, screenshots or a short walkthrough, how to install
+  (`pip install -r requirements.txt`), start and test.
+- A clean, responsive look that works on desktop and mobile widths.
+
+Done means every feature above works end to end in a browser after
+`pip install -r requirements.txt && python3 -m skybook`, and the tests pass.
+
+## How the result is judged
+
+- Every change reaches `main` through a PR that passes the PR checks:
+  - `python3 -m pip install -q --disable-pip-version-check pytest && { [ ! -f requirements.txt ] || python3 -m pip install -q --disable-pip-version-check -r requirements.txt; } && { python3 -m pytest -q; rc=$?; [ $rc -eq 0 ] || [ $rc -eq 5 ]; }`
+- `main` must keep passing the full suite:
+  - `python3 -m pip install -q --disable-pip-version-check pytest && { [ ! -f requirements.txt ] || python3 -m pip install -q --disable-pip-version-check -r requirements.txt; } && { python3 -m pytest -q; rc=$?; [ $rc -eq 0 ] || [ $rc -eq 5 ]; }`
+- When the run ends, `main` is delivered upstream as a pull request that people review
+  before anything is merged. Only work merged into `main` is delivered.
+
+## Rules
+
+1. **Fully autonomous**: there is no human to ask during this run. Settle open
+   questions yourselves from the goal and the repository, decide, and ship.
+2. This is a new project: use Python unless the goal says otherwise.
+3. The network is open: install dependencies with the project's own package manager, and pin what you add.
+4. Follow the repository's conventions: its build, test and style tools, layout and
+   commit style. Do not rewrite code the goal does not need.
+5. Never commit secrets, credentials or personal data.
+6. Keep each chat message under 100 words: decisions, direct questions and short
+   conclusions. Put details, logs and reasoning in issues, PRs and board entries.
+7. Model calls made by the project's own code (experiments, evaluation scripts) go to `$AGENSH_MODEL_BASE`, which forwards them unchanged with the credential added; use it as the API base URL and send no key. These calls count against the team's token budget.
+
+## The first step is always
+
+Read issue #1 and the repository: the README, the build and test setup, and the code
+the goal touches.

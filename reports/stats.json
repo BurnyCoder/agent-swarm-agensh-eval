@@ -1,0 +1,184 @@
+{
+  "pep-rag": {
+    "state": "finalized",
+    "segments": [
+      {
+        "mode": "run",
+        "started": "2026-11-18T13:29:26Z",
+        "ended": "2026-11-18T15:08:00Z",
+        "reason": "budget",
+        "minutes": 98.6
+      }
+    ],
+    "work_minutes": 98.6,
+    "requests": 1010,
+    "http_statuses": {
+      "200": 1010
+    },
+    "models": {
+      "claude-haiku-5-5": 1010
+    },
+    "tokens": {
+      "input_tokens": 396082,
+      "cached_input_tokens": 41606542,
+      "cache_creation_input_tokens": 3238144,
+      "output_tokens": 964261
+    },
+    "cost_usd": {
+      "low": 1.343,
+      "high": 1.585
+    },
+    "workers": {
+      "project": {
+        "input_tokens": 175827,
+        "cached_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 42046,
+        "requests": 181,
+        "cost_low": 0.039,
+        "cost_high": 0.039
+      },
+      "team-worker1": {
+        "input_tokens": 44334,
+        "cached_input_tokens": 11492031,
+        "cache_creation_input_tokens": 675523,
+        "output_tokens": 198992,
+        "requests": 230,
+        "cost_low": 0.303,
+        "cost_high": 0.354
+      },
+      "team-worker2": {
+        "input_tokens": 44276,
+        "cached_input_tokens": 7526230,
+        "cache_creation_input_tokens": 563211,
+        "output_tokens": 198800,
+        "requests": 157,
+        "cost_low": 0.249,
+        "cost_high": 0.292
+      },
+      "team-worker3": {
+        "input_tokens": 36298,
+        "cached_input_tokens": 9150845,
+        "cache_creation_input_tokens": 684261,
+        "output_tokens": 180092,
+        "requests": 183,
+        "cost_low": 0.271,
+        "cost_high": 0.322
+      },
+      "team-worker4": {
+        "input_tokens": 95347,
+        "cached_input_tokens": 13437436,
+        "cache_creation_input_tokens": 1315149,
+        "output_tokens": 344331,
+        "requests": 259,
+        "cost_low": 0.48,
+        "cost_high": 0.579
+      }
+    },
+    "merged_prs_on_main": 18,
+    "merges_by_worker": {
+      "team-worker4": 6,
+      "team-worker3": 5,
+      "team-worker2": 3,
+      "team-worker1": 4
+    },
+    "first_merge": "2026-11-18T13:34:29+00:00",
+    "last_merge": "2026-11-18T14:41:00+00:00",
+    "delivered_commits": 48,
+    "delivery_mode": "branch",
+    "delivery_target": "agensh/20261118t132725z",
+    "acceptance_passed": true,
+    "acceptance_tests_passed": 166,
+    "main_broken_events": 0
+  },
+  "plane-tickets": {
+    "state": "finalized",
+    "segments": [
+      {
+        "mode": "run",
+        "started": "2026-11-18T13:01:28Z",
+        "ended": "2026-11-18T14:02:36Z",
+        "reason": "pause",
+        "minutes": 61.1
+      },
+      {
+        "mode": "resume",
+        "started": "2026-11-18T15:09:14Z",
+        "ended": "2026-11-18T15:46:37Z",
+        "reason": "budget",
+        "minutes": 37.4
+      }
+    ],
+    "work_minutes": 98.5,
+    "requests": 971,
+    "http_statuses": {
+      "200": 971
+    },
+    "models": {
+      "claude-haiku-5-5": 971
+    },
+    "tokens": {
+      "input_tokens": 311045,
+      "cached_input_tokens": 48528274,
+      "cache_creation_input_tokens": 3867743,
+      "output_tokens": 1453283
+    },
+    "cost_usd": {
+      "low": 1.726,
+      "high": 2.017
+    },
+    "workers": {
+      "team-worker1": {
+        "input_tokens": 206497,
+        "cached_input_tokens": 18633378,
+        "cache_creation_input_tokens": 2293836,
+        "output_tokens": 943084,
+        "requests": 375,
+        "cost_low": 0.965,
+        "cost_high": 1.137
+      },
+      "team-worker2": {
+        "input_tokens": 44084,
+        "cached_input_tokens": 9708207,
+        "cache_creation_input_tokens": 638670,
+        "output_tokens": 204617,
+        "requests": 191,
+        "cost_low": 0.284,
+        "cost_high": 0.332
+      },
+      "team-worker3": {
+        "input_tokens": 22983,
+        "cached_input_tokens": 10608948,
+        "cache_creation_input_tokens": 439999,
+        "output_tokens": 148345,
+        "requests": 213,
+        "cost_low": 0.238,
+        "cost_high": 0.271
+      },
+      "team-worker4": {
+        "input_tokens": 37481,
+        "cached_input_tokens": 9577741,
+        "cache_creation_input_tokens": 495238,
+        "output_tokens": 157237,
+        "requests": 192,
+        "cost_low": 0.24,
+        "cost_high": 0.277
+      }
+    },
+    "merged_prs_on_main": 18,
+    "merges_by_worker": {
+      "team-worker4": 7,
+      "team-worker3": 4,
+      "team-worker2": 2,
+      "team-worker1": 5
+    },
+    "first_merge": "2026-11-18T13:03:22+00:00",
+    "last_merge": "2026-11-18T15:33:22+00:00",
+    "delivered_commits": 41,
+    "delivery_mode": "bundle",
+    "delivery_target": "/home/burny/projects/agensh-eval/Agensh/out/projects/plane-tickets/delivery.bundle",
+    "acceptance_passed": true,
+    "acceptance_tests_passed": 228,
+    "main_broken_events": 0
+  }
+}

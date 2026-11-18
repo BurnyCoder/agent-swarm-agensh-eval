@@ -1,0 +1,16 @@
+{
+  "run_id": "20261118t125914z",
+  "seed": "empty",
+  "upstream": "",
+  "base_branch": "main",
+  "base_sha": "9d7cef919be2cd616a042db9bfd82079dc57075a",
+  "history": "full",
+  "team_base": "9d7cef919be2cd616a042db9bfd82079dc57075a",
+  "network": "open",
+  "network_reason": "auto: a new project without an upstream repository",
+  "allow_domains": [],
+  "agensh_files": [
+    ".gitea/workflows/agensh.yml"
+  ],
+  "human": ""
+}

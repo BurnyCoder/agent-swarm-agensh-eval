@@ -1,0 +1,13 @@
+{
+  "head": "8c0b55376b2dcda3f6b6fbf24b94b34283419930",
+  "team_head": "5a3bd3a102fed54e458111862047da572430f3dd",
+  "base_sha": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+  "commits": 48,
+  "run_id": "20261118t132725z",
+  "upstream_sha": "5a85c48530ab07ecfbd2b6fdfcf06d44d1eaa7fb",
+  "sync": "up-to-date",
+  "sensitive_changes": [],
+  "mode": "branch",
+  "upstream": "/home/burny/projects/agensh-eval/rag-upstream",
+  "branch": "agensh/20261118t132725z"
+}

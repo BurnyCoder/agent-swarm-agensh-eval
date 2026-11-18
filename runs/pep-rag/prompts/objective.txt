@@ -1,0 +1,97 @@
+# ⚙️ Current task: pep-rag
+
+## Goal
+
+# PEPtalk: retrieval-augmented question answering over Python PEPs
+
+Build a retrieval-augmented generation (RAG) system that answers questions
+about Python Enhancement Proposals with cited evidence. The corpus is already in
+the repository: `corpus/peps/pep-NNNN.rst` (69 PEPs, reStructuredText; source
+and licenses in `corpus/SOURCE.md`). Do not modify the corpus.
+
+## Stack
+
+- Python 3.12 package `peptalk/` with pinned dependencies in `requirements.txt`.
+- Retrieval: BM25 with `rank-bm25`, dense embeddings with `fastembed`
+  (model `BAAI/bge-small-en-v1.5`, ONNX, CPU), and a hybrid that fuses the two
+  rankings with reciprocal rank fusion (k = 60). Dense retrieval must be
+  optional (a flag or config) so everything works without downloading a model.
+- Generation: Claude Haiku 5.5 through the official `anthropic` Python SDK.
+  - Base URL: `AGENSH_MODEL_BASE` when set (the team's metered model route),
+    else `ANTHROPIC_BASE_URL`, else the SDK default.
+  - API key from `ANTHROPIC_API_KEY` (any non-empty value works on the team route).
+  - If `ANTHROPIC_WORKSPACE_ID` is set, send it as the `anthropic-workspace-id`
+    header (SDK `default_headers`).
+  - Model from `RAG_MODEL`, default `claude-haiku-5-5`.
+- Web: FastAPI + server-rendered HTML (Jinja2) + a little vanilla JS/CSS.
+
+## Features
+
+1. **Ingest** (`python3 -m peptalk index`): parse each PEP's header fields
+   (number, title, status, type, created) and split the body into chunks by
+   section heading (long sections split further with overlap). Keep PEP number,
+   title, section heading and character offsets with each chunk. Persist the
+   index under `data/` (gitignored) so queries do not re-index.
+2. **Search** (`python3 -m peptalk search "query" [--mode bm25|dense|hybrid] [-k 5]`
+   and `GET /api/search?q=&mode=&k=`): ranked chunks with PEP number, title,
+   section, score and a snippet.
+3. **Ask** (`python3 -m peptalk ask "question"` and `POST /api/ask` with
+   `{"question": "...", "mode": "hybrid", "k": 5}`): retrieve, then prompt Claude
+   with the numbered chunks. The answer must cite its sources inline as
+   `[PEP 572 §Rationale]`, and the response lists the cited chunks. If the
+   retrieved evidence does not answer the question, say so instead of guessing.
+   Never invent PEP numbers that are not in the retrieved context.
+4. **Web UI** (`python3 -m peptalk serve`, `http://0.0.0.0:8000`, `PORT`
+   overrides): question box, mode selector, the answer with clickable citations,
+   and the retrieved snippets with scores.
+5. **Evaluation**:
+   - `eval/questions.jsonl` with at least 40 questions written from the corpus,
+     each with `question`, `gold_peps` (list of PEP numbers that answer it) and
+     a short `reference_answer`. Mix easy lookups ("Which PEP introduced the
+     walrus operator?") and harder ones that need a specific section.
+   - `python3 -m peptalk.eval` prints and writes `eval/results.md` with
+     hit@1, hit@5 and MRR of the gold PEPs for bm25, dense and hybrid retrieval.
+   - `python3 -m peptalk.eval --generate` also asks Claude each question and
+     reports citation accuracy (cited PEPs ⊆ gold) and answer correctness
+     (judged by Claude against the reference answer, using a short rubric).
+
+## Quality
+
+- pytest tests that run offline: chunking, BM25 ranking on a tiny fixture,
+  fusion, prompt building, citation parsing, API endpoints with a fake
+  retriever/embedder and a fake LLM client. Tests must not call the network
+  or the model. `python3 -m pytest -q` must pass from the repository root.
+- README: what it is, architecture (ingest → retrieve → generate), install,
+  index, ask, serve, eval, configuration (environment variables), and the
+  latest `eval/results.md` numbers.
+
+Done means: `pip install -r requirements.txt && python3 -m peptalk index` works,
+`ask` returns a cited answer, the web UI works in a browser, `python3 -m peptalk.eval`
+reports retrieval metrics for all three modes, and the tests pass.
+
+## How the result is judged
+
+- Every change reaches `main` through a PR that passes the PR checks:
+  - `python3 -m pip install -q --disable-pip-version-check pytest -r requirements.txt && python3 -m pytest -q`
+- `main` must keep passing the full suite:
+  - `python3 -m pip install -q --disable-pip-version-check pytest -r requirements.txt && python3 -m pytest -q`
+- When the run ends, `main` is delivered upstream as a pull request that people review
+  before anything is merged. Only work merged into `main` is delivered.
+
+## Rules
+
+1. **Fully autonomous**: there is no human to ask during this run. Settle open
+   questions yourselves from the goal and the repository, decide, and ship.
+2. Use the language, frameworks and tooling the repository already uses.
+3. The network is open: install dependencies with the project's own package manager, and pin what you add.
+4. Follow the repository's conventions: its build, test and style tools, layout and
+   commit style. Do not rewrite code the goal does not need.
+5. Never commit secrets, credentials or personal data.
+6. Keep each chat message under 100 words: decisions, direct questions and short
+   conclusions. Put details, logs and reasoning in issues, PRs and board entries.
+7. Model calls made by the project's own code (experiments, evaluation scripts) go to `$AGENSH_MODEL_BASE`, which forwards them unchanged with the credential added; use it as the API base URL and send no key. These calls count against the team's token budget.
+
+## The first step is always
+
+Read issue #1 and the repository: the README, the build and test setup, and the code
+the goal touches.

@@ -1,0 +1,21 @@
+4634ffb|Agensh|2026-11-18T16:44:53+01:00|Remove the Agensh team workflow
+813e3b7|team-worker4|2026-11-18T15:33:22+00:00|Merge pull request 'Test BookingError re-render when a seat is taken before pay (#7)' (#33) from test/booking-error-rerender into main
+6638900|team-worker3|2026-11-18T15:28:46+00:00|Fix checkout passenger and payment layout on phones and desktop (#26)
+6fe811f|team-worker4|2026-11-18T15:27:54+00:00|Journey test: passenger, payment and confirmation steps (#14)
+20dda3c|team-worker4|2026-11-18T15:24:41+00:00|Merge pull request 'README: checkout, confirmation and POST /api/bookings done (#14)' (#29) from docs/readme-booking-14 into main
+4de064f|team-worker2|2026-11-18T15:22:16+00:00|Show tax-inclusive totals on search results (#24)
+d8212ad|team-worker1|2026-11-18T15:21:33+00:00|Merge pull request 'Add passenger details, mock payment and booking checkout (#7)' (#27) from feature/bookings into main
+f116d6b|team-worker4|2026-11-18T15:20:13+00:00|Merge pull request 'README: mark manage-booking API routes done (#14)' (#25) from docs/readme-manage-api into main
+7ce2b62|team-worker3|2026-11-18T15:19:06+00:00|Merge pull request 'Fix manage-booking layout at 360px and add responsive tests (#21)' (#23) from feature/responsive-manage into main
+1b70ae8|team-worker4|2026-11-18T15:18:34+00:00|Merge pull request 'Add HTTP journey test: search, results, flight page, seat choice (#20)' (#22) from feature/journey-test into main
+a3e3667|team-worker2|2026-11-18T15:12:32+00:00|Merge pull request 'Add confirmation and manage booking: lookup, view, cancel (#8)' (#17) from feature/confirmation into main
+be57c94|team-worker3|2026-11-18T15:12:31+00:00|Merge pull request 'Raise header nav links and small buttons to 44px tap targets (#18)' (#19) from feature/tap-targets into main
+6d5ee0b|team-worker3|2026-11-18T13:57:57+00:00|Keep the seat map inside its own box on narrow screens (#11)
+6f125a6|team-worker4|2026-11-18T13:57:44+00:00|Rewrite README: features, walkthrough, API and test instructions (#14)
+a9ad698|team-worker4|2026-11-18T13:53:22+00:00|Merge pull request 'Mock payment card validation (#12)' (#13) from feature/payment into main
+2dc19b4|team-worker1|2026-11-18T13:26:09+00:00|Merge pull request 'Add flight details page with fare breakdown and seat picker (#6)' (#10) from feature/seats into main
+d11c4de|team-worker1|2026-11-18T13:18:18+00:00|Merge pull request 'Add flight search: API, search form and results page (#5)' (#9) from feature/search into main
+0b44c9f|team-worker1|2026-11-18T13:08:41+00:00|Add the SkyBook foundation: app skeleton, schema and seed data (#4)
+5c43bfa|team-worker1|2026-11-18T13:03:22+00:00|[fix-main] Add a smoke test so pytest exits 0
+4b53dca|Agensh|2026-11-18T13:59:14+01:00|Add the Agensh team workflow
+9d7cef9|Agensh|2026-11-18T13:59:14+01:00|Start plane-tickets
