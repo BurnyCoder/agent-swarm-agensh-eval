@@ -14,10 +14,25 @@ Two projects, run in parallel on one WSL2 machine, each with 4 workers and a 1.5
 | `plane-tickets` | Build **SkyBook**, a flight booking web app: search, seats, passengers, mock payment, booking lookup and cancel ([goal](plane-tickets/goal.md)) | empty repository | planning phase on (worker 1 plans first) |
 | `pep-rag` | Build **PEPtalk**, retrieval-augmented question answering over 69 Python PEPs: BM25, dense and hybrid retrieval, Claude answers with citations, web UI, retrieval eval ([goal](rag/goal.md)) | the PEP corpus ([seed script](rag/make_seed.py)) | self-organized (no planning phase) |
 
-**Status:** both runs are in progress. Results (delivered code, CI, tokens and cost, RAG eval numbers,
-screenshots) will be added to `reports/` when the runs finish.
+**Status: both runs finished and were checked by hand.** Full write-up: [reports/run-report.md](reports/run-report.md).
+Generated numbers: [reports/stats.md](reports/stats.md).
 
-## Findings so far
+| | SkyBook (plane tickets) | PEPtalk (RAG) |
+|---|---|---|
+| PRs merged / delivered commits | 18 / 41 | 18 / 48 |
+| Agensh acceptance on the delivered head | pass, 228 tests | pass, 166 tests |
+| Model requests (`claude-haiku-5-5`, 0 errors) | 971 | 1010 |
+| Cost (5-min / 1-h cache-write pricing) | $1.73 / $2.02 | $1.34 / $1.58 |
+| Manual check | full booking flow works in a browser | cited answers; retrieval eval reproduces exactly (hybrid hit@5 1.000, MRR 0.963 on the team's own 83 questions) |
+
+| SkyBook: results | SkyBook: confirmed booking | PEPtalk: cited answer |
+|---|---|---|
+| ![results](reports/screenshots/skybook-2-results.jpg) | ![confirmed](reports/screenshots/skybook-6-confirmed.jpg) | ![walrus](reports/screenshots/peptalk-walrus-hybrid.jpg) |
+
+The delivered code is in [`plane-tickets-app/`](plane-tickets-app/) and [`pep-rag-app/`](pep-rag-app/). Caveats: one run per task,
+no single-agent baseline, and PEPtalk's eval questions were written by the same agents (see the report's Limitations).
+
+## Findings
 
 - **Install works on WSL2 Ubuntu 24.04** with Docker Engine, systemd and cgroup v2. Agensh's scripts call `sudo docker` / `sudo -n`.
   Instead of adding a passwordless-sudo rule, everything runs as root (`wsl -u root`). 81/81 unit tests pass.
@@ -38,7 +53,11 @@ screenshots) will be added to `reports/` when the runs finish.
   `[fix-main]` PRs until worker 1 added a smoke test itself. The RAG seed repository ships a passing corpus test to avoid this.
 - **Self-organization (RAG run).** Without a planning phase, the four Haiku workers split the work by issue within minutes:
   ingest + BM25, dense + hybrid retrieval, generation with citations, web UI/API, and the eval set.
-  After 15 minutes they had 6 PRs merged through the CI gate.
+  After 15 minutes they had 6 PRs merged through the CI gate, and they finished with 18 merges and no `main` breakage.
+- **Memory, not tokens, was the bottleneck for two teams on one machine.** Each PEPtalk worker ran the app's CPU embedding
+  (1.3–2.9 GB per process) to test its own changes, pushing the containers close to the `agensh.slice` limit. I paused the
+  plane-tickets team (`python3 -m agensh.project pause`) and resumed it after PEPtalk delivered (`HOURS=0.55 … resume`).
+  Pause and resume worked cleanly.
 
 ## How it is set up
 
@@ -98,9 +117,21 @@ To watch a run: Gitea is at `http://localhost:<EDGE_HTTP_PORT>` and Mattermost a
 (ports are in the generated `.env.software-project-<name>`). For live token use per worker, run
 `python3 scripts/team_status.py software-project-<name>`.
 
+## Results layout
+
+| Path | Content |
+|---|---|
+| `runs/<name>/` | Copied run records: `run_state`, `delivery`, `acceptance`, `main-health`, `prepare`, `sync` JSON, the proxy's `usage.jsonl`, the delivered first-parent `git-log.txt`, the rendered team prompts, and (PEPtalk) my reproduced eval results |
+| [`runs/fetch_artifacts.sh`](runs/fetch_artifacts.sh) | Copies those records from the WSL checkout (no profiles, tokens or service logs) |
+| [`reports/collect_stats.py`](reports/collect_stats.py) | Regenerates `reports/stats.md` / `stats.json` from `runs/` |
+| `plane-tickets-app/`, `pep-rag-app/` | The delivered code, as exported by Agensh |
+
 ## To do
 
-- [ ] Collect results when the runs finish: `delivery.json`, `acceptance.json`, PR/issue timeline, tokens and cost per team
-- [ ] Check the delivered apps: run their tests, click through SkyBook, run the PEPtalk retrieval eval and ask questions
-- [ ] Write `reports/run-report.md` with screenshots
-- [ ] Report the planning-gate title brittleness and the `fake_upstream` port-0 quirk upstream to microsoft/Agensh
+- [x] Collect results: `delivery.json`, `acceptance.json`, timeline, tokens and cost per team
+- [x] Check the delivered apps: tests, SkyBook booking flow, PEPtalk retrieval + generation eval and UI
+- [x] Write `reports/run-report.md` with screenshots
+- [ ] Report upstream to microsoft/Agensh: the planning gate's dependence on the `[plan]` title, the `fake_upstream` port-0 quirk,
+      and that `max_model_tokens` excludes cache tokens
+- [ ] For a real comparison: a single-agent baseline (`workers = 1`, same budget, `fixed_length = true`), several seeds, and a
+      held-out, human-written PEPtalk question set
