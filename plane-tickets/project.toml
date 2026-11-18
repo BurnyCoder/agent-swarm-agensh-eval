@@ -1,0 +1,29 @@
+# Agensh software-project file: one team of Claude Code workers (Claude Haiku 5.5)
+# builds a plane ticket booking web app from an empty repository.
+# Format: https://github.com/microsoft/Agensh/blob/main/tasks/software-project/README.md
+pack = "software-project"
+name = "plane-tickets"
+goal_file = "goal.md"
+
+[workspace]
+seed = "empty"          # new project, no upstream: delivery is out/projects/plane-tickets/delivery.bundle
+
+[acceptance]
+# Install pytest and the project's requirements, then run the tests. Exit code 5
+# ("no tests collected") counts as a pass so the empty initial main is not "broken".
+pr = ["python3 -m pip install -q --disable-pip-version-check pytest && { [ ! -f requirements.txt ] || python3 -m pip install -q --disable-pip-version-check -r requirements.txt; } && { python3 -m pytest -q; rc=$?; [ $rc -eq 0 ] || [ $rc -eq 5 ]; }"]
+timeout_minutes = 15
+
+[team]
+workers = 4
+
+[budget]
+hours = 1.5
+max_model_tokens = 40000000   # team input + output tokens; the run pauses when spent
+
+[coordination]
+planning = true               # worker 1 writes ARCHITECTURE.md and issues before the others wake
+
+[environment]
+base_image = "default-python" # python:3.12-bookworm
+# network defaults to "auto": open for a new project without an upstream
