@@ -1,0 +1,12 @@
+# Secrets: API key and workspace id
+.env
+.env.*
+*.env
+# Agensh runtime state (contains generated passwords and tokens)
+.claude-team-data/
+# Python
+__pycache__/
+*.pyc
+.venv/
+# Raw run outputs copied from WSL (may contain logs with internal URLs); curated copies live in reports/
+runs/raw/

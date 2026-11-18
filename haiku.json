@@ -1,0 +1,8 @@
+{
+  "harness": "claude",
+  "version": "2.1.327",
+  "model": "claude-haiku-5-5",
+  "reasoning_effort": "high",
+  "prompt_tokens": 100000,
+  "compact_fraction": 0.8
+}
