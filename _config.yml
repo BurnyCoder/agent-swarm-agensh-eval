@@ -1,0 +1,7 @@
+# GitHub Pages (Jekyll) site for this repository: README.md becomes the home page and
+# reports/run-report.md is served at /reports/run-report.html. Code and run records are
+# served as static files, so the README's relative links keep working on the site.
+# Docs: https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
+title: "Agensh × Claude Code × Claude Haiku 5.5"
+description: "Two Agensh multi-agent team runs: a plane-ticket booking app and a RAG system over Python PEPs"
+theme: jekyll-theme-cayman

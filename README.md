@@ -14,7 +14,8 @@ Two projects, run in parallel on one WSL2 machine, each with 4 workers and a 1.5
 | `plane-tickets` | Build **SkyBook**, a flight booking web app: search, seats, passengers, mock payment, booking lookup and cancel ([goal](plane-tickets/goal.md)) | empty repository | planning phase on (worker 1 plans first) |
 | `pep-rag` | Build **PEPtalk**, retrieval-augmented question answering over 69 Python PEPs: BM25, dense and hybrid retrieval, Claude answers with citations, web UI, retrieval eval ([goal](rag/goal.md)) | the PEP corpus ([seed script](rag/make_seed.py)) | self-organized (no planning phase) |
 
-**Status: both runs finished and were checked by hand.** Full write-up: [reports/run-report.md](reports/run-report.md).
+**Status: both runs finished and were checked by hand.** Full write-up: [reports/run-report.md](reports/run-report.md)
+(also on the [project website](https://burnycoder.github.io/agent-swarm-agensh-eval/reports/run-report.html)).
 Generated numbers: [reports/stats.md](reports/stats.md).
 
 | | SkyBook (plane tickets) | PEPtalk (RAG) |
